@@ -15,6 +15,29 @@ class WhitelistFileService
         'GENERAL' => 'ICT-GENERALS-list.txt',
     ];
 
+    public function files(): array
+    {
+        return array_values(self::FILES);
+    }
+
+    public function webDirectoryName(): string
+    {
+        return basename(rtrim($this->resolveDirectory(), "\\/"));
+    }
+
+    public function pathForWebFile(string $directory, string $filename): string
+    {
+        abort_unless($directory === $this->webDirectoryName() && in_array($filename, self::FILES, true), 404);
+
+        $path = $this->resolveDirectory() . DIRECTORY_SEPARATOR . $filename;
+        File::ensureDirectoryExists($this->resolveDirectory());
+        if (! File::exists($path)) {
+            File::put($path, '');
+        }
+
+        return $path;
+    }
+
     public function sync(): void
     {
         $directory = $this->resolveDirectory();

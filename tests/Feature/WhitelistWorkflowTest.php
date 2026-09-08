@@ -32,4 +32,26 @@ class WhitelistWorkflowTest extends TestCase
         $this->assertStringContainsString('192.168.10.25', File::get($directory . '/SNS-Allow-list.txt'));
         $this->assertSame('', File::get($directory . '/ICT-GENERALS-list.txt'));
     }
+
+    public function test_authenticated_user_can_view_the_configured_files_as_plain_text(): void
+    {
+        $directory = storage_path('framework/testing/JL');
+        AppSetting::updateOrCreate(['key' => 'whitelist_output_directory'], ['value' => $directory]);
+        File::ensureDirectoryExists($directory);
+        File::put($directory . '/YT-Allow-list.txt', "192.168.1.10\n");
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->get('/JL')
+            ->assertOk()
+            ->assertSee('YT-Allow-list.txt')
+            ->assertSee('/JL');
+
+        $response = $this->actingAs($user)
+            ->get('/JL/YT-Allow-list.txt')
+            ->assertOk()
+            ->assertHeader('Content-Type', 'text/plain; charset=UTF-8');
+
+        $this->assertStringContainsString('192.168.1.10', File::get($directory . '/YT-Allow-list.txt'));
+    }
 }

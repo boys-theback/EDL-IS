@@ -35,6 +35,7 @@ class WhitelistController extends Controller
             'generalCount' => WhitelistEntry::where('application', 'GENERAL')->count(),
             'outputDirectory' => AppSetting::where('key', 'whitelist_output_directory')->value('value') ?: '',
             'resolvedOutputDirectory' => $this->files->resolveDirectory(),
+            'webDirectory' => $this->files->webDirectoryName(),
         ]);
     }
 

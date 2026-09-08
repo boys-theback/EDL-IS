@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AdminPathController;
 use App\Http\Controllers\WhitelistController;
+use App\Http\Controllers\WhitelistFileController;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/dashboard');
@@ -30,4 +31,7 @@ Route::middleware('auth')->group(function () {
         Route::put('/settings/output-directory', [AdminPathController::class, 'update'])->name('settings.output-directory');
         Route::get('/audit-logs', [AdminController::class, 'auditLogs'])->name('audit-logs');
     });
+
+    Route::get('/{directory}', [WhitelistFileController::class, 'index'])->name('whitelist-files.index');
+    Route::get('/{directory}/{filename}', [WhitelistFileController::class, 'show'])->name('whitelist-files.show');
 });
